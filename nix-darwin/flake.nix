@@ -8,9 +8,17 @@
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    fenix = {
+      url = "github:nix-community/fenix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    rustowl = {
+      url = "github:nix-community/rustowl-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager }:
+  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, fenix, rustowl }:
   let
     system = "aarch64-darwin";
     pkgs = nixpkgs.legacyPackages.${system};
@@ -118,7 +126,7 @@
       modules = [
         configuration
         {
-          # nixpkgs.overlays = [ nixpkgs-firefox-darwin.overlay ];
+          nixpkgs.overlays = [fenix.overlays.default ];
         }
         home-manager.darwinModules.home-manager
         {
@@ -128,6 +136,8 @@
           # home.nix に 変数を渡すための設定
           home-manager.extraSpecialArgs = {
             inherit user;
+            inherit rustowl;
+            inherit system;
             gitName = settings.gitName;
             gitEmail = settings.gitEmail;
           };
