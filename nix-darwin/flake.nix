@@ -18,7 +18,7 @@
     };
   };
 
-  outputs = inputs@{ self, nix-darwin, nixpkgs, home-manager, fenix, rustowl }:
+  outputs = { self, nix-darwin, nixpkgs, home-manager, fenix, rustowl }:
   let
     system = "aarch64-darwin";
     pkgs = nixpkgs.legacyPackages.${system};
@@ -93,6 +93,7 @@
           "nani"
           "spotify"
           "commander-one"
+          "bitwarden"
         ];
 
         onActivation = {
