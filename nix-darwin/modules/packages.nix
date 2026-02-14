@@ -28,6 +28,7 @@ in
     gitleaks
     pre-commit
     zellij
+    mosh
 
     # Filer for terminal
     yazi
