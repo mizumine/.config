@@ -3,25 +3,25 @@
 {
   programs.wezterm = {
     enable = true;
-    
+
     extraConfig = ''
       local wezterm = require 'wezterm'
       local act = wezterm.action
       local config = {}
-        
+
       if wezterm.config_builder then
         config = wezterm.config_builder()
       end
-      
+
       config.automatically_reload_config = true
       config.window_background_opacity = 0.5
       config.default_prog = { "${pkgs.zellij}/bin/zellij" }
       -- config.default_prog = { "${pkgs.zsh}/bin/zsh" }
- 
+
       -- 装飾系設定
       config.enable_tab_bar = false
       config.window_decorations = "RESIZE"
-      
+
       config.send_composed_key_when_left_alt_is_pressed = true
       config.send_composed_key_when_right_alt_is_pressed = true
 
@@ -32,7 +32,7 @@
         { key = 'l', mods = 'CMD', action = act.SendKey { key = 'l', mods = 'ALT' } },
         { key = 'n', mods = 'CMD', action = act.SendKey { key = 'n', mods = 'ALT' } },
         { key = 't', mods = 'CMD', action = act.SendKey { key = 't', mods = 'ALT' } },
-      } 
+      }
       return config
     '';
   };
