@@ -10,3 +10,4 @@ zellij/config.*
 .gitleaks.toml
 .git-template/*
 wezterm.lua
+lazygit/config.yml
