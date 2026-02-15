@@ -3,9 +3,9 @@ return {
   lazy = false,
   priority = 1000,
   opts = {
-    -- transparent = true,
-    -- styles = {
-    --   sidebars = "transparent",
-    -- },
+    transparent = true,
+    styles = {
+      sidebars = "transparent",
+    },
   },
 }

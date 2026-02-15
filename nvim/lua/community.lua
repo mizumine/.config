@@ -9,7 +9,7 @@ return {
   "AstroNvim/astrocommunity",
   { import = "astrocommunity.pack.lua" },
   { import = "astrocommunity.pack.rust" },
-  -- { import = "astrocommunity.colorscheme.tokyonight-nvim" },
+  { import = "astrocommunity.colorscheme.tokyonight-nvim" },
   { import = "astrocommunity.colorscheme.catppuccin" },
   { import = "astrocommunity.bars-and-lines.lualine-nvim" },
   { import = "astrocommunity.split-and-window.colorful-winsep-nvim" },
