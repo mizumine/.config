@@ -2,9 +2,9 @@
 
 {
   programs.zsh = {
-    enable = true; 
+    enable = true;
 
-    # Powerlevel10k
+    # Powerlevel10k theme
     plugins = [
       {
         name = "powerlevel10k";
@@ -14,19 +14,23 @@
     ];
 
     initContent = ''
-      # --- Powerlevel10k の設定 ---
+      # --- Powerlevel10k ---
       [[ ! -f ~/.config/zsh/.p10k.zsh ]] || source ~/.config/zsh/.p10k.zsh
 
-      # --- Rust (Cargo) のパス設定 ---
+      # --- Rust (Cargo) ---
       if [ -d "$HOME/.cargo/bin" ]; then
         export PATH="$HOME/.cargo/bin:$PATH"
       fi
+
+      # --- Mise ---
+      if command -v mise &> /dev/null; then
+        eval "$(mise activate zsh)"
+      fi
+
+      # --- Local bin ---
+      if [ -d "$HOME/.local/bin" ]; then
+        export PATH="$HOME/.local/bin:$PATH"
+      fi
     '';
   };
-
-  programs.direnv = {
-     enable = true;
-     nix-direnv.enable = true;
-     enableZshIntegration = true;
-   };
 }

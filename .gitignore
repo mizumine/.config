@@ -3,6 +3,7 @@ git
 karabiner/assets
 karabiner/automatic_backups
 nix/mysettings.json
+nix/settings-ubuntu.json
 gh
 direnv
 aerospace

@@ -5,15 +5,15 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    nix-common.url = "path:../nix-common";
+    nix-common.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-common, ... }:
     let
       # --- 設定変数の定義 ---
-      # settings = builtins.fromJSON (builtins.readFile (builtins.getEnv "PWD" + "/../nix/mysettings.json"));
       user = "root";  # Dockerコンテナ内のユーザー
       gitName = "AI Agent";
-      # gitEmail = settings.gitEmail;
       gitEmail = "example@example.com";
       system = "aarch64-linux"; # M4 Mac上のDocker用
 
@@ -24,12 +24,23 @@
         exec "${pkgs.vscode-extensions.vadimcn.vscode-lldb}/share/vscode/extensions/vadimcn.vscode-lldb/adapter/codelldb" "$@"
       '';
     in {
-	    formatter.${system} = pkgs.nixfmt-rfc-style;
+      formatter.${system} = pkgs.nixfmt-rfc-style;
 
       homeConfigurations."${user}" = home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
+        extraSpecialArgs = {
+          inherit gitName gitEmail;
+        };
+
         modules = [
+          # Shared modules from nix-common (NOT rust-fenix - uses rustup instead)
+          nix-common.homeManagerModules.packages-base
+          nix-common.homeManagerModules.git
+          nix-common.homeManagerModules.zsh
+          nix-common.homeManagerModules.direnv
+
+          # Docker-specific configuration
           ({ pkgs, config, lib, ... }: {
 
             # --- ユーザー設定 ---
@@ -38,42 +49,15 @@
             home.stateVersion = "24.05";
 
             home.sessionVariables = {
-	          LANG = "ja_JP.UTF-8";
-	          LC_ALL = "ja_JP.UTF-8";
-	          EDITOR = "nvim";
-	          SHELL = "${pkgs.zsh}/bin/zsh";
-	        };
+              LANG = "ja_JP.UTF-8";
+              LC_ALL = "ja_JP.UTF-8";
+              EDITOR = "nvim";
+              SHELL = "${pkgs.zsh}/bin/zsh";
+            };
 
-            # --- パッケージ ---
+            # --- Docker-specific packages ---
             home.packages = with pkgs; [
-              # System Utils
-              vim
-              neovim
-              git
-              ripgrep
-              fd
-              gh
-              bat
-              eza
-              dust
-              typos
-              jq
-              ast-grep
-              lazygit
-              bottom
-              gdu
-              visidata
-	            gitleaks
-	            pre-commit
-
-              # Filer for terminal
-              yazi
-              zoxide
-              resvg
-              poppler
-              ffmpeg
-
-              # Runtime / Languages
+              # Runtime / Languages (rustup instead of fenix)
               nodejs_20
               mise
               rustup
@@ -86,69 +70,7 @@
             # --- プログラム設定 ---
             programs.home-manager.enable = true;
 
-            # Git設定
-            programs.git = {
-              enable = true;
-              userName = gitName;
-              userEmail = gitEmail;
-              ignores = [ ".DS_Store" ]; # Linuxでも共有フォルダ用に残す
-              extraConfig = {
-                init.templateDir = "${config.home.homeDirectory}/.config/.git-template";
-              };
-            };
-            home.activation = {
-              installGitHooks = lib.hm.dag.entryAfter ["writeBoundary"] ''
-                echo "Running pre-commit init-templatedir..."
-                # pre-commitコマンドを使ってテンプレートディレクトリを初期化・更新
-                # ${pkgs.pre-commit} でNixストア内の正確なパスを参照
-                ${pkgs.pre-commit}/bin/pre-commit init-templatedir ${config.home.homeDirectory}/.config/.git-template
-	            '';
-	          };
-
-            # Direnv設定
-            programs.direnv = {
-              enable = true;
-              nix-direnv.enable = true;
-              enableZshIntegration = true;
-            };
-
-            # Zsh設定
-            programs.zsh = {
-              enable = true;
-
-              # Powerlevel10kプラグイン
-              plugins = [
-                {
-                  name = "powerlevel10k";
-                  src = pkgs.zsh-powerlevel10k;
-                  file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-                }
-              ];
-
-              # 初期化スクリプト
-              initContent = ''
-                # --- Powerlevel10k ---
-                # p10k.zshがない場合の対策
-                if [[ -f "$HOME/.config/zsh/.p10k.zsh" ]]; then
-                  source "$HOME/.config/zsh/.p10k.zsh"
-                fi
-
-                # --- Rust (Cargo) ---
-                if [ -d "$HOME/.cargo/bin" ]; then
-                  export PATH="$HOME/.cargo/bin:$PATH"
-                fi
-
-                # --- Mise (Linux用) ---
-                eval "$(mise activate zsh)"
-
-                # --- claude code ---
-                if [ -d "$HOME/.local/bin" ]; then
-                  export PATH="$HOME/.local/bin:$PATH"
-                fi
-              '';
-            };
-
-            # zellij設定
+            # zellij設定 (Docker-specific keybinds to avoid conflict with host)
             programs.zellij = {
               enable = true;
               settings = {
@@ -169,9 +91,8 @@
                 };
               };
             };
-	          # シンボリックリンク
-	          # xdg.configFile."nvim".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/nvim";
-            # xdg.configFile."mise".source = config.lib.file.mkOutOfStoreSymlink "${config.home.homeDirectory}/.config/mise";
+
+            # シンボリックリンク (Claude config sync)
             home.activation.syncClaudeConfig = lib.hm.dag.entryAfter ["writeBoundary"] ''
               # -------------------------------------------------------
               # 設定: ~/.config/claude (Git管理) の中身を ~/.claude にリンクする

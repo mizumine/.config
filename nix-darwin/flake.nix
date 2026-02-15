@@ -2,23 +2,16 @@
   description = "Example nix-darwin system flake";
 
   inputs = {
-
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     nix-darwin.url = "github:nix-darwin/nix-darwin/master";
     nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
     home-manager.url = "github:nix-community/home-manager";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
-    fenix = {
-      url = "github:nix-community/fenix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    rustowl = {
-      url = "github:nix-community/rustowl-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    nix-common.url = "path:../nix-common";
+    nix-common.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nix-darwin, nixpkgs, home-manager, fenix, rustowl }:
+  outputs = { self, nix-darwin, nixpkgs, home-manager, nix-common }:
   let
     system = "aarch64-darwin";
     pkgs = nixpkgs.legacyPackages.${system};
@@ -127,7 +120,7 @@
       modules = [
         configuration
         {
-          nixpkgs.overlays = [fenix.overlays.default ];
+          nixpkgs.overlays = [ nix-common.overlays.fenix ];
         }
         home-manager.darwinModules.home-manager
         {
@@ -137,8 +130,9 @@
           # home.nix に 変数を渡すための設定
           home-manager.extraSpecialArgs = {
             inherit user;
-            inherit rustowl;
             inherit system;
+            inherit nix-common;
+            rustowl = nix-common.rustowl;
             gitName = settings.gitName;
             gitEmail = settings.gitEmail;
           };

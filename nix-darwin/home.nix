@@ -1,11 +1,17 @@
-{ user, ... }:
+{ user, nix-common, ... }:
 
-{ 
+{
   # importsを使って分割したファイルを読み込みます
   imports = [
-    ./modules/packages.nix
-    ./modules/git.nix
-    ./modules/zsh.nix
+    # Shared modules from nix-common
+    nix-common.homeManagerModules.packages-base
+    nix-common.homeManagerModules.rust-fenix
+    nix-common.homeManagerModules.git
+    nix-common.homeManagerModules.zsh
+    nix-common.homeManagerModules.direnv
+
+    # Darwin-specific modules
+    ./modules/darwin-packages.nix
     ./modules/wezterm.nix
     ./modules/aerospace.nix
   ];
