@@ -43,6 +43,11 @@
           nix-common.homeManagerModules.zsh
           nix-common.homeManagerModules.direnv
 
+          # Ubuntu-specific modules
+          ./modules/ubuntu-packages.nix
+          ./modules/wezterm.nix
+          ./modules/sway.nix
+
           # Ubuntu-specific configuration
           ({ pkgs, config, lib, ... }: {
             home.username = user;
@@ -54,23 +59,16 @@
               LC_ALL = "ja_JP.UTF-8";
               EDITOR = "nvim";
               SHELL = "${pkgs.zsh}/bin/zsh";
+              # Wayland-specific
+              MOZ_ENABLE_WAYLAND = "1";
+              QT_QPA_PLATFORM = "wayland";
+              SDL_VIDEODRIVER = "wayland";
+              _JAVA_AWT_WM_NONREPARENTING = "1";
             };
-
-            # Ubuntu desktop-specific packages
-            home.packages = with pkgs; [
-              # GUI applications
-              wezterm
-              zellij
-
-              # Runtime / Languages
-              nodejs_24
-              mise
-              gcc
-            ];
 
             programs.home-manager.enable = true;
 
-            # Zellij configuration (same as docker for consistency)
+            # Zellij configuration
             programs.zellij = {
               enable = true;
               settings = {
