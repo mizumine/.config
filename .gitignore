@@ -5,6 +5,7 @@ karabiner/automatic_backups
 nix/mysettings.json
 nix/settings-ubuntu.json
 gh
+go
 direnv
 aerospace
 zellij/config.*

@@ -47,6 +47,7 @@
           ./modules/ubuntu-packages.nix
           ./modules/wezterm.nix
           ./modules/sway.nix
+          ./modules/fstab.nix
 
           # Ubuntu-specific configuration
           ({ pkgs, config, lib, ... }: {
