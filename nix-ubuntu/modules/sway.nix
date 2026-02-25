@@ -151,6 +151,7 @@
       # Startup commands
       startup = [
         { command = "${pkgs.mako}/bin/mako"; }  # Notification daemon
+        { command = "${pkgs.fcitx5}/bin/fcitx5 -d"; }  # Japanese input
       ];
 
       # Input configuration
