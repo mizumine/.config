@@ -113,8 +113,8 @@
         "${mod2}+n" = "move container to workspace N; workspace N";
         "${mod2}+o" = "move container to workspace O; workspace O";
         "${mod2}+p" = "move container to workspace P; workspace P";
-        "${mod2}+q" = "move container to workspace Q; workspace Q";
-        # "${mod2}+r" = "move container to workspace R; workspace R";
+        # "${mod2}+q" = "move container to workspace Q; workspace Q";
+        "${mod2}+r" = "move container to workspace R; workspace R";
         "${mod2}+s" = "move container to workspace S; workspace S";
         "${mod2}+t" = "move container to workspace T; workspace T";
         "${mod2}+u" = "move container to workspace U; workspace U";
