@@ -6,7 +6,8 @@
     fcitx5
     fcitx5-mozc
     fcitx5-gtk
-    fcitx5-qt
+    # fcitx5-qt
+    libsForQt5.fcitx5-qt
     fcitx5-configtool
   ];
 
