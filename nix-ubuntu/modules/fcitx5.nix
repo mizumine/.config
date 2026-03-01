@@ -8,7 +8,8 @@
     fcitx5-gtk
     # fcitx5-qt
     libsForQt5.fcitx5-qt
-    fcitx5-configtool
+    # fcitx5-configtool
+    qt6Packages.fcitx5-configtool
   ];
 
   # Input method environment variables
