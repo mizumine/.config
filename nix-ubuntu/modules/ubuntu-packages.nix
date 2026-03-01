@@ -12,7 +12,7 @@
     (mkNixGLWrapper gl nautilus)
 
     # Wayland utilities (GL-wrapped)
-    (mkNixGLWrapper gl waybar)
+    # waybar is set via programs.waybar.package in sway.nix
     (mkNixGLWrapper gl wofi)
     (mkNixGLWrapper gl swaylock)
 

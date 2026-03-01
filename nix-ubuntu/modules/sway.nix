@@ -185,6 +185,7 @@
   # Waybar configuration
   programs.waybar = {
     enable = true;
+    package = glPackages.waybar;
     settings = {
       mainBar = {
         layer = "top";
