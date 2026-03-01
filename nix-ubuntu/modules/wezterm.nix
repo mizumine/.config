@@ -1,8 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, glPackages, ... }:
 
 {
   programs.wezterm = {
     enable = true;
+    package = glPackages.wezterm;
 
     extraConfig = ''
       local wezterm = require 'wezterm'

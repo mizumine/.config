@@ -1,4 +1,4 @@
-{ pkgs, config, ... }:
+{ pkgs, config, glPackages, ... }:
 
 {
   wayland.windowManager.sway = {
@@ -7,8 +7,8 @@
 
     config = {
       modifier = "Mod1";  # Alt key (same as aerospace)
-      terminal = "${pkgs.wezterm}/bin/wezterm";
-      menu = "${pkgs.wofi}/bin/wofi --show drun";
+      terminal = "${glPackages.wezterm}/bin/wezterm";
+      menu = "${glPackages.wofi}/bin/wofi --show drun";
 
       # Font for window titles
       fonts = {
@@ -134,18 +134,18 @@
         "${mod2}+q" = "kill";
 
         # Application launcher
-        "${mod}+space" = "exec ${pkgs.wofi}/bin/wofi --show drun";
+        "${mod}+space" = "exec ${glPackages.wofi}/bin/wofi --show drun";
 
         # Terminal
-        "${mod}+Return" = "exec ${pkgs.wezterm}/bin/wezterm";
+        "${mod}+Return" = "exec ${glPackages.wezterm}/bin/wezterm";
 
         # Lock screen
-        "${mod2}+Delete" = "exec ${pkgs.swaylock}/bin/swaylock -f -c 000000";
+        "${mod2}+Delete" = "exec ${glPackages.swaylock}/bin/swaylock -f -c 000000";
       };
 
       # Status bar
       bars = [{
-        command = "${pkgs.waybar}/bin/waybar";
+        command = "${glPackages.waybar}/bin/waybar";
       }];
 
       # Startup commands

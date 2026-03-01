@@ -7,9 +7,11 @@
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
     nix-common.url = "path:../nix-common";
     nix-common.inputs.nixpkgs.follows = "nixpkgs";
+    nixgl.url = "github:nix-community/nixGL";
+    nixgl.inputs.nixpkgs.follows = "nixpkgs";
   };
 
-  outputs = { self, nixpkgs, home-manager, nix-common, ... }:
+  outputs = { self, nixpkgs, home-manager, nix-common, nixgl, ... }:
     let
       system = "x86_64-linux";
 
@@ -22,7 +24,37 @@
       pkgs = import nixpkgs {
         inherit system;
         config.allowUnfree = true;
-        overlays = [ nix-common.overlays.fenix ];
+        overlays = [
+          nix-common.overlays.fenix
+          nixgl.overlay
+        ];
+      };
+
+      # nixGL wrapper for Intel GPU
+      gl = pkgs.nixgl.nixGLIntel;
+
+      # Helper function to wrap packages with nixGL
+      mkNixGLWrapper = glWrapper: pkg:
+        pkgs.runCommand "${pkg.pname or pkg.name}-nixgl-wrapped" {
+          nativeBuildInputs = [ pkgs.makeWrapper ];
+        } ''
+          mkdir -p $out/bin
+          for bin in ${pkg}/bin/*; do
+            binName=$(basename "$bin")
+            makeWrapper ${glWrapper}/bin/nixGLIntel $out/bin/$binName \
+              --add-flags "$bin"
+          done
+          if [ -d "${pkg}/share" ]; then
+            ln -s ${pkg}/share $out/share
+          fi
+        '';
+
+      # Pre-wrapped packages for convenience
+      glPackages = {
+        wezterm = mkNixGLWrapper gl pkgs.wezterm;
+        waybar = mkNixGLWrapper gl pkgs.waybar;
+        wofi = mkNixGLWrapper gl pkgs.wofi;
+        swaylock = mkNixGLWrapper gl pkgs.swaylock;
       };
     in {
       formatter.${system} = pkgs.nixfmt-rfc-style;
@@ -32,6 +64,7 @@
 
         extraSpecialArgs = {
           inherit user system gitName gitEmail;
+          inherit gl mkNixGLWrapper glPackages;
           rustowl = nix-common.rustowl;
         };
 
